@@ -63,22 +63,28 @@ class _MyHomePageState extends State<MyHomePage> {
   Direction direction = Direction.none;
   GameState gameState = GameState.running;
   double score = 0;
+  double step = 1;
 
   @override
   void didChangeDependencies() {
     Timer.periodic(const Duration(milliseconds: 5), (timer) {
       double newMarioY = marioY;
       Direction newDirection = direction;
+      step = step + 0.01;
       switch (direction) {
         case Direction.up:
-          newMarioY--;
+          newMarioY -= step;
           if (newMarioY < 150) {
+            newMarioY = 150;
+            step = 1;
             newDirection = Direction.down;
           }
           break;
         case Direction.down:
-          newMarioY++;
+          newMarioY += step;
           if (newMarioY > stageSize) {
+            step = 1;
+            newMarioY = stageSize;
             newDirection = Direction.none;
           }
           break;
@@ -168,6 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
     direction = Direction.none;
     gameState = GameState.running;
     score = 0;
+    step = 1;
   }
 
   Widget buildGame() {
