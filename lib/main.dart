@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 
@@ -51,7 +52,7 @@ class MyHomePage extends StatefulWidget {
 
 const double stageSize = 300;
 const double size = 30;
-const double wallHeight = 60;
+double wallHeight = 60;
 
 enum Direction { up, down, none }
 
@@ -100,6 +101,9 @@ class _MyHomePageState extends State<MyHomePage> {
           score = score + 0.1;
 
           wallX = wallX - 1 + stageSize;
+          if (wallX < stageSize) {
+            wallHeight = Random().nextDouble() * 60 + 20;
+          }
           wallX = wallX % stageSize;
 
           marioY = newMarioY;
