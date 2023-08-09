@@ -206,6 +206,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   height: size),
               child: Container(
                 color: Colors.orange,
+                child: Image.asset("images/mario.png"),
               ),
             ),
             Positioned.fromRect(
