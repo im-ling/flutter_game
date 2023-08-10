@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'jump_game.dart';
+import 'snake_game.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const JumpGamePage(title: 'JumpGame'),
+      home: const SnakeGmePage(),
     );
   }
 }

@@ -179,7 +179,7 @@ class _JumpGamePageState extends State<JumpGamePage> {
                   height: size),
               child: Container(
                 color: Colors.orange,
-                child: Image.asset("images/mario.png"),
+                child: Image.asset("images/mario2.png"),
               ),
             ),
             Positioned.fromRect(
