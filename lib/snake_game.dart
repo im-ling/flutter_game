@@ -13,13 +13,13 @@ class SnakeGmePage extends StatefulWidget {
   State<SnakeGmePage> createState() => _SnakeGmePageState();
 }
 
-double maxWidth = 300;
-double maxHeight = 300;
+double maxWidth = 100;
+double maxHeight = 100;
 
 class _SnakeGmePageState extends State<SnakeGmePage> {
   String title = "Snake";
 
-  Offset ball = Offset.zero;
+  Offset ball = Offset(0, 10);
 
   double size = 10;
 
@@ -27,16 +27,46 @@ class _SnakeGmePageState extends State<SnakeGmePage> {
 
   List<Offset> snakeList = [const Offset(50, 0), const Offset(60, 0)];
 
+  bool isAutoGame = false;
+
+  Direction autoGame(Offset snakeHead) {
+    var newDirection = direction;
+    if (direction == Direction.down && snakeHead.dx == 0) {
+      newDirection = Direction.right;
+    }
+
+    if (direction == Direction.down &&
+        snakeHead.dx == maxWidth - size &&
+        snakeHead.dy ~/ 10 % 2 == 0) {
+      newDirection = Direction.left;
+    }
+
+    if (direction == Direction.left &&
+        snakeHead.dx == 0 &&
+        (snakeHead.dy % size) % 2 == 0) {
+      newDirection = Direction.down;
+    }
+    if (direction == Direction.right &&
+        snakeHead.dx == maxWidth - size &&
+        snakeHead.dy ~/ 10 % 2 == 1) {
+      newDirection = Direction.down;
+    }
+
+    return newDirection;
+  }
+
   @override
   void initState() {
-    Timer.periodic(const Duration(milliseconds: 200), (timer) {
+    Timer.periodic(const Duration(milliseconds: 50), (timer) {
       final snakeHead = snakeList[0];
+      var newDirection = direction;
+      if (isAutoGame) newDirection = autoGame(snakeHead);
 
       List<Offset> newSnakeList = List.generate(snakeList.length, (index) {
         if (index > 0) {
           return snakeList[index - 1];
         } else {
-          switch (direction) {
+          switch (newDirection) {
             case Direction.up:
               return Offset(
                   snakeHead.dx, (snakeHead.dy - size + maxHeight) % maxHeight);
@@ -58,6 +88,7 @@ class _SnakeGmePageState extends State<SnakeGmePage> {
         ball = newBall();
       }
       snakeList = newSnakeList;
+      direction = newDirection;
 
       setState(() {});
     });
