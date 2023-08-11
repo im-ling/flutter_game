@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -196,74 +197,85 @@ class _SnakeGmePageState extends State<SnakeGmePage> {
           const SizedBox(
             height: 10,
           ),
-          Container(
-            width: 120,
-            height: 120,
-            color: Colors.transparent,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+          buildKeyBoard(),
+        ],
+      ),
+    );
+  }
+
+  Widget buildKeyBoard() {
+    if (Platform.isIOS || Platform.isAndroid) {
+      return Container(
+        width: 120,
+        height: 120,
+        color: Colors.transparent,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 40,
+              height: 40,
+              child: IconButton(
+                onPressed: () {
+                  if (direction != Direction.down) direction = Direction.up;
+                },
+                icon: const Icon(Icons.keyboard_arrow_up),
+              ),
+            ),
+            Row(
               children: [
                 SizedBox(
                   width: 40,
                   height: 40,
                   child: IconButton(
                     onPressed: () {
-                      if (direction != Direction.down) direction = Direction.up;
+                      if (direction != Direction.right) {
+                        direction = Direction.left;
+                      }
                     },
-                    icon: const Icon(Icons.keyboard_arrow_up),
+                    icon: const Icon(Icons.keyboard_arrow_left),
                   ),
                 ),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 40,
-                      height: 40,
-                      child: IconButton(
-                        onPressed: () {
-                          if (direction != Direction.right) {
-                            direction = Direction.left;
-                          }
-                        },
-                        icon: const Icon(Icons.keyboard_arrow_left),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 40,
-                      height: 40,
-                    ),
-                    SizedBox(
-                      width: 40,
-                      height: 40,
-                      child: IconButton(
-                        onPressed: () {
-                          if (direction != Direction.left) {
-                            direction = Direction.right;
-                          }
-                        },
-                        icon: const Icon(Icons.keyboard_arrow_right),
-                      ),
-                    ),
-                  ],
+                const SizedBox(
+                  width: 40,
+                  height: 40,
                 ),
                 SizedBox(
                   width: 40,
                   height: 40,
                   child: IconButton(
                     onPressed: () {
-                      if (direction != Direction.up) {
-                        direction = Direction.down;
+                      if (direction != Direction.left) {
+                        direction = Direction.right;
                       }
                     },
-                    icon: const Icon(Icons.keyboard_arrow_down),
+                    icon: const Icon(Icons.keyboard_arrow_right),
                   ),
                 ),
               ],
             ),
-          )
-        ],
-      ),
-    );
+            SizedBox(
+              width: 40,
+              height: 40,
+              child: IconButton(
+                onPressed: () {
+                  if (direction != Direction.up) {
+                    direction = Direction.down;
+                  }
+                },
+                icon: const Icon(Icons.keyboard_arrow_down),
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return const SizedBox(
+        width: 0,
+        height: 0,
+      );
+    }
   }
 
   Offset addjust(Offset offset) {
