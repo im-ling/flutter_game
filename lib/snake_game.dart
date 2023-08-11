@@ -97,9 +97,9 @@ class _SnakeGmePageState extends State<SnakeGmePage> {
   }
 
   Offset newBall() {
-    var dx = Random().nextInt(maxWidth.toInt() + 1);
+    var dx = Random().nextInt(maxWidth.toInt());
     dx = dx - dx % 10;
-    var dy = Random().nextInt(maxHeight.toInt() + 1);
+    var dy = Random().nextInt(maxHeight.toInt());
     dy = dy - dy % 10;
     var newOffset = Offset(dx.toDouble(), dy.toDouble());
     if (snakeList.contains(newOffset)) {
