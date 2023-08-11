@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class JumpGamePage extends StatefulWidget {
-  const JumpGamePage({super.key, required this.title});
+  const JumpGamePage({super.key});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -14,8 +14,6 @@ class JumpGamePage extends StatefulWidget {
   // case the title) provided by the parent (in this case the App widget) and
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
-
-  final String title;
 
   @override
   State<JumpGamePage> createState() => _JumpGamePageState();
@@ -31,12 +29,21 @@ enum Direction { up, down, none }
 enum GameState { running, dead }
 
 class _JumpGamePageState extends State<JumpGamePage> {
+  String title = "Jump Game";
   double marioY = stageSize;
   double wallX = stageSize;
   Direction direction = Direction.none;
   GameState gameState = GameState.running;
   double score = 0;
   double step = stepInitial;
+  bool isDispose = false;
+
+  @override
+  void dispose() {
+    isDispose = true;
+    // TODO: implement dispose
+    super.dispose();
+  }
 
   @override
   void didChangeDependencies() {
@@ -63,6 +70,11 @@ class _JumpGamePageState extends State<JumpGamePage> {
           }
           break;
         default:
+      }
+
+      if (isDispose) {
+        timer.cancel();
+        return;
       }
 
       if (wallX < size && marioY > stageSize - wallHeight) {
@@ -105,7 +117,7 @@ class _JumpGamePageState extends State<JumpGamePage> {
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text(title),
       ),
       body: SizedBox(
         height: double.infinity,

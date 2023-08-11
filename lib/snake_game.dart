@@ -34,6 +34,15 @@ class _SnakeGmePageState extends State<SnakeGmePage> {
   int score = 0;
   GameState gameState = GameState.running;
 
+  bool isDispose = false;
+
+  @override
+  void dispose() {
+    isDispose = true;
+    // TODO: implement dispose
+    super.dispose();
+  }
+
   Direction autoGame(Offset snakeHead) {
     var newDirection = direction;
     if (direction == Direction.down && snakeHead.dx == 0) {
@@ -101,6 +110,10 @@ class _SnakeGmePageState extends State<SnakeGmePage> {
             snakeList[i].dy == snakeList[0].dy) {
           gameState = GameState.dead;
         }
+      }
+      if (isDispose) {
+        timer.cancel();
+        return;
       }
       setState(() {});
     });
