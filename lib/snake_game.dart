@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 
 enum Direction { up, down, left, right }
 
+enum GameState { running, dead }
+
 class SnakeGmePage extends StatefulWidget {
   const SnakeGmePage({super.key});
 
@@ -13,8 +15,8 @@ class SnakeGmePage extends StatefulWidget {
   State<SnakeGmePage> createState() => _SnakeGmePageState();
 }
 
-double maxWidth = 100;
-double maxHeight = 100;
+double maxWidth = 300;
+double maxHeight = 300;
 
 class _SnakeGmePageState extends State<SnakeGmePage> {
   String title = "Snake";
@@ -28,6 +30,9 @@ class _SnakeGmePageState extends State<SnakeGmePage> {
   List<Offset> snakeList = [const Offset(50, 0), const Offset(60, 0)];
 
   bool isAutoGame = false;
+
+  int score = 0;
+  GameState gameState = GameState.running;
 
   Direction autoGame(Offset snakeHead) {
     var newDirection = direction;
@@ -57,7 +62,7 @@ class _SnakeGmePageState extends State<SnakeGmePage> {
 
   @override
   void initState() {
-    Timer.periodic(const Duration(milliseconds: 50), (timer) {
+    Timer.periodic(const Duration(milliseconds: 200), (timer) {
       final snakeHead = snakeList[0];
       var newDirection = direction;
       if (isAutoGame) newDirection = autoGame(snakeHead);
@@ -86,10 +91,17 @@ class _SnakeGmePageState extends State<SnakeGmePage> {
         newSnakeList.add(snakeList.last);
         snakeList = newSnakeList;
         ball = newBall();
+        score += 1;
       }
       snakeList = newSnakeList;
       direction = newDirection;
 
+      for (int i = 1; i < snakeList.length; i++) {
+        if (snakeList[i].dx == snakeList[0].dx &&
+            snakeList[i].dy == snakeList[0].dy) {
+          gameState = GameState.dead;
+        }
+      }
       setState(() {});
     });
     // TODO: implement initState
@@ -135,30 +147,40 @@ class _SnakeGmePageState extends State<SnakeGmePage> {
           direction = newDirection;
         });
       },
-      child: Container(
-        color: Colors.blueAccent,
-        width: maxWidth.toDouble(),
-        height: maxHeight.toDouble(),
-        child: Stack(
-          children: snakeList
-              .map(
-                (e) => Positioned.fromRect(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text("Score: $score"),
+          const SizedBox(
+            height: 10,
+          ),
+          Container(
+            color: Colors.blueAccent,
+            width: maxWidth,
+            height: maxHeight,
+            child: Stack(
+              children: snakeList
+                  .map(
+                    (e) => Positioned.fromRect(
+                      rect: Rect.fromCenter(
+                          center: addjust(e), width: size, height: size),
+                      child: Container(
+                        color: Colors.black,
+                      ),
+                    ),
+                  )
+                  .toList()
+                ..add(Positioned.fromRect(
                   rect: Rect.fromCenter(
-                      center: addjust(e), width: size, height: size),
+                      center: addjust(ball), width: size, height: size),
                   child: Container(
-                    color: Colors.black,
+                    color: Colors.orange,
                   ),
-                ),
-              )
-              .toList()
-            ..add(Positioned.fromRect(
-              rect: Rect.fromCenter(
-                  center: addjust(ball), width: size, height: size),
-              child: Container(
-                color: Colors.orange,
-              ),
-            )),
-        ),
+                )),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -166,6 +188,42 @@ class _SnakeGmePageState extends State<SnakeGmePage> {
   Offset addjust(Offset offset) {
     // return offset;
     return Offset(offset.dx + size / 2.0, offset.dy + size / 2);
+  }
+
+  Widget buildDead() {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(width: 1, color: Colors.black),
+      ),
+      // color: Colors.blueAccent,
+      width: maxWidth,
+      height: maxHeight,
+      child: Center(
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("High Scores:$score"),
+          const SizedBox(
+            height: 5,
+          ),
+          const Text("Game Over"),
+          TextButton(
+            onPressed: () {
+              reset();
+            },
+            child: const Text("Retry"),
+          )
+        ],
+      )),
+    );
+  }
+
+  void reset() {
+    ball = Offset(0, 10);
+    direction = Direction.left;
+    snakeList = [const Offset(50, 0), const Offset(60, 0)];
+    score = 0;
+    gameState = GameState.running;
   }
 
   @override
@@ -180,7 +238,7 @@ class _SnakeGmePageState extends State<SnakeGmePage> {
         height: double.infinity,
         width: double.infinity,
         child: Center(
-          child: buildGame(),
+          child: gameState == GameState.running ? buildGame() : buildDead(),
         ),
       ),
     );
