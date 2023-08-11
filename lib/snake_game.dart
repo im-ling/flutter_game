@@ -180,6 +180,74 @@ class _SnakeGmePageState extends State<SnakeGmePage> {
                 )),
             ),
           ),
+          const SizedBox(
+            height: 10,
+          ),
+          Container(
+            width: 120,
+            height: 120,
+            color: Colors.transparent,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: IconButton(
+                    onPressed: () {
+                      if (direction != Direction.down) direction = Direction.up;
+                    },
+                    icon: const Icon(Icons.keyboard_arrow_up),
+                  ),
+                ),
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: IconButton(
+                        onPressed: () {
+                          if (direction != Direction.right) {
+                            direction = Direction.left;
+                          }
+                        },
+                        icon: const Icon(Icons.keyboard_arrow_left),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 40,
+                      height: 40,
+                    ),
+                    SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: IconButton(
+                        onPressed: () {
+                          if (direction != Direction.left) {
+                            direction = Direction.right;
+                          }
+                        },
+                        icon: const Icon(Icons.keyboard_arrow_right),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: IconButton(
+                    onPressed: () {
+                      if (direction != Direction.up) {
+                        direction = Direction.down;
+                      }
+                    },
+                    icon: const Icon(Icons.keyboard_arrow_down),
+                  ),
+                ),
+              ],
+            ),
+          )
         ],
       ),
     );
