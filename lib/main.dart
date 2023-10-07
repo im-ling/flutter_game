@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'jump_game.dart';
 import 'snake_game.dart';
+import 'flip_card.dart';
 
 void main() {
   runApp(const MyApp());
@@ -27,12 +28,13 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
         home: const IndexPage(),
-        initialRoute: "/",
+        // initialRoute: "/",
         routes: {
           // 静态页面
           // "/": (context) => const IndexPage(),
           "/jump_game": (context) => const JumpGamePage(),
           "/snake_game": (context) => const SnakeGmePage(),
+          "/flip_card": (context) => const FlipCardPage(),
         });
   }
 }
@@ -72,23 +74,33 @@ class _IndexPageState extends State<IndexPage> {
             const SizedBox(
               height: 40,
             ),
-            OutlinedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/snake_game', arguments: {});
-              },
-              child: const Text("Snake Game"),
-            ),
+            buildBtnWithTitleJumpString(
+                context, "Snake Game", '/snake_game', {}),
             const SizedBox(
               height: 20,
             ),
-            OutlinedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/jump_game', arguments: {});
-              },
-              child: const Text("Jump Game"),
-            )
+            buildBtnWithTitleJumpString(context, "Jump Game", '/jump_game', {}),
+            const SizedBox(
+              height: 20,
+            ),
+            buildBtnWithTitleJumpString(context, "Flip Card", '/flip_card', {}),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget buildBtnWithTitleJumpString(BuildContext context, String title,
+      String routeName, Object? jumpArguments) {
+    var arguments = jumpArguments ?? {};
+    return OutlinedButton(
+      onPressed: () {
+        Navigator.pushNamed(context, routeName, arguments: arguments);
+      },
+      child: Container(
+        width: 90,
+        alignment: Alignment.center,
+        child: Text(title),
       ),
     );
   }
