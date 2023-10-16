@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class FlipCardPage extends StatefulWidget {
@@ -38,8 +40,23 @@ class FlipCard extends StatefulWidget {
 class _FlipCardState extends State<FlipCard> {
   bool isFront = true;
 
-  void testFunction() {
-    print("test");
+  // void testFunction() {
+  //   print("test");
+  // }
+
+  Widget _transitionBuilder(Widget child, Animation<double> animation) {
+    final ani = Tween(begin: pi, end: 0).animate(animation);
+    return AnimatedBuilder(
+        animation: ani,
+        builder: (BuildContext context, Widget? widget) {
+          return Transform(
+            transform: Matrix4.rotationY(
+              ani.value.toDouble(),
+            ),
+            alignment: Alignment.center,
+            child: child,
+          );
+        });
   }
 
   @override
@@ -51,13 +68,15 @@ class _FlipCardState extends State<FlipCard> {
         });
       },
       child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 500),
+        transitionBuilder: _transitionBuilder,
+        duration: const Duration(milliseconds: 1000),
         child: isFront
-            ? const MyCard(
+            ? MyCard(
+                key: ValueKey(true),
                 str: "正面",
                 color: Colors.blue,
               )
-            : const MyCard(str: "背面", color: Colors.green),
+            : MyCard(key: ValueKey(false), str: "", color: Colors.green),
       ),
     );
   }
@@ -76,18 +95,19 @@ class MyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      key: key,
       width: 200,
       height: 200,
       alignment: Alignment.center,
-      decoration: const BoxDecoration(
-        color: Colors.blueAccent,
-        borderRadius: BorderRadius.all(
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: const BorderRadius.all(
           Radius.circular(15),
         ),
       ),
       child: Text(
         str,
-        style: TextStyle(color: color, fontSize: 32),
+        style: const TextStyle(fontSize: 32),
       ),
     );
   }
