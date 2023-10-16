@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 class FlipCardPage extends StatefulWidget {
@@ -55,36 +53,41 @@ class _FlipCardState extends State<FlipCard> {
       child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 500),
         child: isFront
-            ? Container(
-                width: 200,
-                height: 200,
-                alignment: Alignment.center,
-                decoration: const BoxDecoration(
-                  color: Colors.blueAccent,
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(15),
-                  ),
-                ),
-                child: const Text(
-                  "front",
-                  style: TextStyle(color: Colors.white, fontSize: 32),
-                ),
+            ? const MyCard(
+                str: "正面",
+                color: Colors.blue,
               )
-            : Container(
-                width: 200,
-                height: 200,
-                alignment: Alignment.center,
-                decoration: const BoxDecoration(
-                  color: Colors.greenAccent,
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(15),
-                  ),
-                ),
-                child: const Text(
-                  "back",
-                  style: TextStyle(color: Colors.white, fontSize: 32),
-                ),
-              ),
+            : const MyCard(str: "背面", color: Colors.green),
+      ),
+    );
+  }
+}
+
+class MyCard extends StatelessWidget {
+  const MyCard({
+    super.key,
+    required this.str,
+    required this.color,
+  });
+
+  final String str;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 200,
+      height: 200,
+      alignment: Alignment.center,
+      decoration: const BoxDecoration(
+        color: Colors.blueAccent,
+        borderRadius: BorderRadius.all(
+          Radius.circular(15),
+        ),
+      ),
+      child: Text(
+        str,
+        style: TextStyle(color: color, fontSize: 32),
       ),
     );
   }
