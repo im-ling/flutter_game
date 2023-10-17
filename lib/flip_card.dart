@@ -11,7 +11,58 @@ class FlipCardPage extends StatefulWidget {
 
 class _FlipCardPageState extends State<FlipCardPage> {
   String title = "Flip Card";
-  List<String> nums = List.generate(16, (index) => index.toString());
+  List<String> candidates = [];
+  List<String> correctNumList = [];
+  List<bool> isFrontList = List.generate(16, (index) => false);
+
+  bool isFirstClick = true;
+  String lastClickCandidate = "";
+  int lastClickIdx = 0;
+
+  void onCardTap(idx, text) {
+    setState(() {
+      isFrontList[idx] = !isFrontList[idx];
+    });
+    if (isFirstClick) {
+      lastClickCandidate = text;
+      lastClickIdx = idx;
+    } else {
+      if (idx == lastClickIdx) {
+      } else {
+        if (text == lastClickCandidate) {
+          Future.delayed(const Duration(milliseconds: 2000), () {
+            setState(() {
+              correctNumList.add(text);
+            });
+          });
+        } else {
+          Future.delayed(const Duration(milliseconds: 2000), () {
+            setState(() {
+              isFrontList[idx] = false;
+              isFrontList[lastClickIdx] = false;
+            });
+          });
+        }
+      }
+    }
+    isFirstClick = !isFirstClick;
+  }
+
+  List<String> generateCandidates() {
+    List<String> result = [];
+    for (int i = 0; i < 16; i++) {
+      result.add((i ~/ 2 + 1).toString());
+    }
+    result.shuffle();
+    return result;
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    candidates = generateCandidates();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +91,25 @@ class _FlipCardPageState extends State<FlipCardPage> {
           child: Wrap(
             spacing: interval,
             runSpacing: interval,
-            children:
-                nums.map((e) => FlipCard(sideLen: cardSideLength)).toList(),
+            children: candidates
+                .asMap()
+                .map((idx, e) => MapEntry(
+                    idx,
+                    correctNumList.contains(e)
+                        ? SizedBox(
+                            width: cardSideLength,
+                            height: cardSideLength,
+                          )
+                        : FlipCard(
+                            sideLen: cardSideLength,
+                            text: e,
+                            isFront: isFrontList[idx],
+                            onTap: () {
+                              onCardTap(idx, e);
+                            },
+                          )))
+                .values
+                .toList(),
           ),
         ),
       ),
@@ -50,17 +118,23 @@ class _FlipCardPageState extends State<FlipCardPage> {
 }
 
 class FlipCard extends StatefulWidget {
-  FlipCard({super.key, required this.sideLen});
+  FlipCard(
+      {super.key,
+      required this.sideLen,
+      required this.text,
+      required this.isFront,
+      required this.onTap});
 
   double sideLen;
+  String text;
+  bool isFront;
+  Function? onTap;
 
   @override
   State<FlipCard> createState() => _FlipCardState();
 }
 
 class _FlipCardState extends State<FlipCard> {
-  bool isFront = true;
-
   // void testFunction() {
   //   print("test");
   // }
@@ -88,16 +162,16 @@ class _FlipCardState extends State<FlipCard> {
       child: GestureDetector(
         onTap: () {
           setState(() {
-            isFront = !isFront;
+            widget.onTap?.call();
           });
         },
         child: AnimatedSwitcher(
           transitionBuilder: _transitionBuilder,
           duration: const Duration(milliseconds: 1000),
-          child: isFront
-              ? const MyCard(
-                  key: ValueKey(true),
-                  str: "front",
+          child: widget.isFront
+              ? MyCard(
+                  key: const ValueKey(true),
+                  str: widget.text,
                   color: Colors.blue,
                 )
               : const MyCard(
@@ -131,7 +205,7 @@ class MyCard extends StatelessWidget {
       ),
       child: Text(
         str,
-        style: const TextStyle(fontSize: 20),
+        style: const TextStyle(fontSize: 20, color: Colors.white),
       ),
     );
   }
