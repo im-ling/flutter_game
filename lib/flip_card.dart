@@ -19,7 +19,31 @@ class _FlipCardPageState extends State<FlipCardPage> {
   String lastClickCandidate = "";
   int lastClickIdx = 0;
 
+  bool isRunningGame = false;
+
+  bool canFlip = false;
+
+  void newGame() {
+    candidates = generateCandidates();
+    correctNumList.clear();
+    isFirstClick = true;
+  }
+
+  void startGame() {
+    newGame();
+    isRunningGame = true;
+    canFlip = false;
+    isFrontList = List.generate(16, (index) => true);
+    setState(() {});
+    Future.delayed(const Duration(seconds: 3), () {
+      canFlip = true;
+      isFrontList = List.generate(16, (index) => false);
+      setState(() {});
+    });
+  }
+
   void onCardTap(idx, text) {
+    if (!canFlip) return;
     setState(() {
       isFrontList[idx] = !isFrontList[idx];
     });
@@ -30,16 +54,17 @@ class _FlipCardPageState extends State<FlipCardPage> {
       if (idx == lastClickIdx) {
       } else {
         if (text == lastClickCandidate) {
-          Future.delayed(const Duration(milliseconds: 2000), () {
+          Future.delayed(const Duration(milliseconds: 1500), () {
             setState(() {
               correctNumList.add(text);
             });
           });
         } else {
-          Future.delayed(const Duration(milliseconds: 2000), () {
+          var temp = lastClickIdx;
+          Future.delayed(const Duration(milliseconds: 1500), () {
             setState(() {
               isFrontList[idx] = false;
-              isFrontList[lastClickIdx] = false;
+              isFrontList[temp] = false;
             });
           });
         }
@@ -60,7 +85,6 @@ class _FlipCardPageState extends State<FlipCardPage> {
   @override
   void initState() {
     // TODO: implement initState
-    candidates = generateCandidates();
     super.initState();
   }
 
@@ -85,33 +109,50 @@ class _FlipCardPageState extends State<FlipCardPage> {
         alignment: Alignment.center,
         height: double.infinity,
         width: double.infinity,
-        child: SizedBox(
-          width: cardSideLength * 4 + interval * 3,
-          height: cardSideLength * 4 + interval * 3,
-          child: Wrap(
-            spacing: interval,
-            runSpacing: interval,
-            children: candidates
-                .asMap()
-                .map((idx, e) => MapEntry(
-                    idx,
-                    correctNumList.contains(e)
-                        ? SizedBox(
-                            width: cardSideLength,
-                            height: cardSideLength,
-                          )
-                        : FlipCard(
-                            sideLen: cardSideLength,
-                            text: e,
-                            isFront: isFrontList[idx],
-                            onTap: () {
-                              onCardTap(idx, e);
-                            },
-                          )))
-                .values
-                .toList(),
-          ),
-        ),
+        child: isRunningGame
+            ? SizedBox(
+                width: cardSideLength * 4 + interval * 3,
+                height: cardSideLength * 4 + interval * 3,
+                child: Wrap(
+                  spacing: interval,
+                  runSpacing: interval,
+                  children: candidates
+                      .asMap()
+                      .map((idx, e) => MapEntry(
+                          idx,
+                          correctNumList.contains(e)
+                              ? SizedBox(
+                                  width: cardSideLength,
+                                  height: cardSideLength,
+                                )
+                              : FlipCard(
+                                  sideLen: cardSideLength,
+                                  text: e,
+                                  isFront: isFrontList[idx],
+                                  onTap: () {
+                                    onCardTap(idx, e);
+                                  },
+                                )))
+                      .values
+                      .toList(),
+                ),
+              )
+            : Container(
+                // color: Colors.blueAccent,
+                width: cardSideLength * 4 + interval * 3,
+                height: cardSideLength * 4 + interval * 3,
+                child: GestureDetector(
+                  onTap: () {
+                    startGame();
+                  },
+                  child: const Center(
+                    child: Text(
+                      "Start Game",
+                      style: TextStyle(fontSize: 25, color: Colors.blue),
+                    ),
+                  ),
+                ),
+              ),
       ),
     );
   }
