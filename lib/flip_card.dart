@@ -110,33 +110,7 @@ class _FlipCardPageState extends State<FlipCardPage> {
         height: double.infinity,
         width: double.infinity,
         child: isRunningGame
-            ? SizedBox(
-                width: cardSideLength * 4 + interval * 3,
-                height: cardSideLength * 4 + interval * 3,
-                child: Wrap(
-                  spacing: interval,
-                  runSpacing: interval,
-                  children: candidates
-                      .asMap()
-                      .map((idx, e) => MapEntry(
-                          idx,
-                          correctNumList.contains(e)
-                              ? SizedBox(
-                                  width: cardSideLength,
-                                  height: cardSideLength,
-                                )
-                              : FlipCard(
-                                  sideLen: cardSideLength,
-                                  text: e,
-                                  isFront: isFrontList[idx],
-                                  onTap: () {
-                                    onCardTap(idx, e);
-                                  },
-                                )))
-                      .values
-                      .toList(),
-                ),
-              )
+            ? gameView(cardSideLength, interval)
             : Container(
                 // color: Colors.blueAccent,
                 width: cardSideLength * 4 + interval * 3,
@@ -153,6 +127,36 @@ class _FlipCardPageState extends State<FlipCardPage> {
                   ),
                 ),
               ),
+      ),
+    );
+  }
+
+  Widget gameView(cardSideLength, interval) {
+    return SizedBox(
+      width: cardSideLength * 4 + interval * 3,
+      height: cardSideLength * 4 + interval * 3,
+      child: Wrap(
+        spacing: interval,
+        runSpacing: interval,
+        children: candidates
+            .asMap()
+            .map((idx, e) => MapEntry(
+                idx,
+                correctNumList.contains(e)
+                    ? SizedBox(
+                        width: cardSideLength,
+                        height: cardSideLength,
+                      )
+                    : FlipCard(
+                        sideLen: cardSideLength,
+                        text: e,
+                        isFront: isFrontList[idx],
+                        onTap: () {
+                          onCardTap(idx, e);
+                        },
+                      )))
+            .values
+            .toList(),
       ),
     );
   }
