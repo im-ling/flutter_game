@@ -18,6 +18,7 @@ class _FlipCardPageState extends State<FlipCardPage> {
 
   double countdown = 3.0;
   double timeCount = 0.0;
+  int steps = 0;
 
   bool isFirstClick = true;
   String lastClickCandidate = "";
@@ -55,6 +56,7 @@ class _FlipCardPageState extends State<FlipCardPage> {
 
     countdown = 3.0;
     timeCount = 0.0;
+    steps = 0;
     setState(() {});
 
     timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
@@ -75,6 +77,7 @@ class _FlipCardPageState extends State<FlipCardPage> {
 
   void onCardTap(idx, text) {
     if (!canFlip) return;
+    steps++;
     setState(() {
       isFrontList[idx] = !isFrontList[idx];
     });
@@ -172,14 +175,29 @@ class _FlipCardPageState extends State<FlipCardPage> {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          countdown > 0
-              ? "倒计时: ${countdown.toStringAsFixed(1)}"
-              : '计时: ${timeCount.toStringAsFixed(1)}',
-          style: TextStyle(
-              fontSize: 25,
-              color: countdown > 0 ? Colors.redAccent : Colors.blue),
-        ),
+        countdown > 0
+            ? Text(
+                "倒计时: ${countdown.toStringAsFixed(1)}",
+                style: const TextStyle(fontSize: 25, color: Colors.redAccent),
+              )
+            : SizedBox(
+                height: 80,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '计时: ${timeCount.toStringAsFixed(1)}',
+                      style: const TextStyle(fontSize: 25, color: Colors.blue),
+                    ),
+                    Text(
+                      '步数: $steps',
+                      style: const TextStyle(fontSize: 25, color: Colors.blue),
+                    ),
+                  ],
+                ),
+              ),
         const SizedBox(
           height: 5,
         ),
