@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -15,6 +16,9 @@ class _FlipCardPageState extends State<FlipCardPage> {
   List<String> correctNumList = [];
   List<bool> isFrontList = List.generate(16, (index) => false);
 
+  double countdown = 3.0;
+  double timeCount = 0.0;
+
   bool isFirstClick = true;
   String lastClickCandidate = "";
   int lastClickIdx = 0;
@@ -22,6 +26,20 @@ class _FlipCardPageState extends State<FlipCardPage> {
   bool isRunningGame = false;
 
   bool canFlip = false;
+
+  Timer? timer = null;
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    closetimer();
+  }
+
+  void closetimer() {
+    timer?.cancel();
+    timer = null;
+  }
 
   void newGame() {
     candidates = generateCandidates();
@@ -34,10 +52,23 @@ class _FlipCardPageState extends State<FlipCardPage> {
     isRunningGame = true;
     canFlip = false;
     isFrontList = List.generate(16, (index) => true);
+
+    countdown = 3.0;
+    timeCount = 0.0;
     setState(() {});
-    Future.delayed(const Duration(seconds: 3), () {
-      canFlip = true;
-      isFrontList = List.generate(16, (index) => false);
+
+    timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+      if (!isRunningGame) return;
+      if (countdown > 0) {
+        countdown -= 0.1;
+        if (countdown <= 0) {
+          // 第一次countdown结束
+          canFlip = true;
+          isFrontList = List.generate(16, (index) => false);
+        }
+      } else {
+        timeCount += 0.1;
+      }
       setState(() {});
     });
   }
@@ -59,6 +90,7 @@ class _FlipCardPageState extends State<FlipCardPage> {
               correctNumList.add(text);
               if (correctNumList.length << 1 == isFrontList.length) {
                 isRunningGame = false;
+                closetimer();
               }
             });
           });
@@ -135,32 +167,50 @@ class _FlipCardPageState extends State<FlipCardPage> {
   }
 
   Widget gameView(cardSideLength, interval) {
-    return SizedBox(
-      width: cardSideLength * 4 + interval * 3,
-      height: cardSideLength * 4 + interval * 3,
-      child: Wrap(
-        spacing: interval,
-        runSpacing: interval,
-        children: candidates
-            .asMap()
-            .map((idx, e) => MapEntry(
-                idx,
-                correctNumList.contains(e)
-                    ? SizedBox(
-                        width: cardSideLength,
-                        height: cardSideLength,
-                      )
-                    : FlipCard(
-                        sideLen: cardSideLength,
-                        text: e,
-                        isFront: isFrontList[idx],
-                        onTap: () {
-                          onCardTap(idx, e);
-                        },
-                      )))
-            .values
-            .toList(),
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          countdown > 0
+              ? "倒计时: ${countdown.toStringAsFixed(1)}"
+              : '计时: ${timeCount.toStringAsFixed(1)}',
+          style: TextStyle(
+              fontSize: 25,
+              color: countdown > 0 ? Colors.redAccent : Colors.blue),
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        SizedBox(
+          width: cardSideLength * 4 + interval * 3,
+          height: cardSideLength * 4 + interval * 3,
+          child: Wrap(
+            spacing: interval,
+            runSpacing: interval,
+            children: candidates
+                .asMap()
+                .map((idx, e) => MapEntry(
+                    idx,
+                    correctNumList.contains(e)
+                        ? SizedBox(
+                            width: cardSideLength,
+                            height: cardSideLength,
+                          )
+                        : FlipCard(
+                            sideLen: cardSideLength,
+                            text: e,
+                            isFront: isFrontList[idx],
+                            onTap: () {
+                              onCardTap(idx, e);
+                            },
+                          )))
+                .values
+                .toList(),
+          ),
+        ),
+      ],
     );
   }
 }
