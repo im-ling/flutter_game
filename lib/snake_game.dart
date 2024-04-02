@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 enum Direction { up, down, left, right }
 
@@ -204,6 +205,13 @@ class _SnakeGmePageState extends State<SnakeGmePage> {
   }
 
   Widget buildKeyBoard() {
+    if (kIsWeb) {
+      return const SizedBox(
+        width: 0,
+        height: 0,
+      );
+    }
+
     if (Platform.isIOS || Platform.isAndroid) {
       return Container(
         width: 120,
@@ -270,12 +278,12 @@ class _SnakeGmePageState extends State<SnakeGmePage> {
           ],
         ),
       );
-    } else {
-      return const SizedBox(
-        width: 0,
-        height: 0,
-      );
     }
+
+    return const SizedBox(
+      width: 0,
+      height: 0,
+    );
   }
 
   Offset addjust(Offset offset) {
