@@ -16,6 +16,8 @@ class _FlipCardPageState extends State<FlipCardPage> {
   List<String> correctNumList = [];
   List<bool> isFrontList = List.generate(16, (index) => false);
 
+  double highscoreTimeCount = 999;
+  int highscoreSteps = 999;
   double countdown = 3.0;
   double timeCount = 0.0;
   int steps = 0;
@@ -93,6 +95,12 @@ class _FlipCardPageState extends State<FlipCardPage> {
               correctNumList.add(text);
               if (correctNumList.length << 1 == isFrontList.length) {
                 isRunningGame = false;
+                if (highscoreSteps > steps ||
+                    (highscoreSteps == steps &&
+                        highscoreTimeCount > timeCount)) {
+                  highscoreSteps = steps;
+                  highscoreTimeCount = timeCount;
+                }
                 closetimer();
               }
             });
@@ -149,23 +157,61 @@ class _FlipCardPageState extends State<FlipCardPage> {
         width: double.infinity,
         child: isRunningGame
             ? gameView(cardSideLength, interval)
-            : Container(
-                // color: Colors.blueAccent,
-                width: cardSideLength * 4 + interval * 3,
-                height: cardSideLength * 4 + interval * 3,
-                child: GestureDetector(
-                  onTap: () {
-                    startGame();
-                  },
-                  child: const Center(
-                    child: Text(
-                      "Start Game",
-                      style: TextStyle(fontSize: 25, color: Colors.blue),
-                    ),
-                  ),
-                ),
-              ),
+            : newGameView(cardSideLength, interval),
       ),
+    );
+  }
+
+  Widget newGameView(cardSideLength, interval) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        GestureDetector(
+          onTap: () {
+            startGame();
+          },
+          child: const Center(
+            child: Text(
+              "Start Game",
+              style: TextStyle(fontSize: 25, color: Colors.blue),
+            ),
+          ),
+        ),
+        Container(
+          height: 80,
+          width: 120,
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.all(
+              Radius.circular(15),
+            ),
+            border: Border.all(
+              color: Colors.orangeAccent,
+            ),
+          ),
+          // color: Colors.amberAccent,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                '最高记录',
+                style: TextStyle(fontSize: 15, color: Colors.black),
+              ),
+              Text(
+                '步数: $highscoreSteps',
+                style: const TextStyle(fontSize: 15, color: Colors.black),
+              ),
+              Text(
+                '计时: ${highscoreTimeCount.toStringAsFixed(1)} s',
+                style: const TextStyle(fontSize: 15, color: Colors.black),
+              ),
+            ],
+          ),
+        )
+      ],
     );
   }
 
@@ -177,7 +223,7 @@ class _FlipCardPageState extends State<FlipCardPage> {
       children: [
         countdown > 0
             ? Text(
-                "倒计时: ${countdown.toStringAsFixed(1)}",
+                "倒计时: ${countdown.toStringAsFixed(1)} s",
                 style: const TextStyle(fontSize: 25, color: Colors.redAccent),
               )
             : SizedBox(
@@ -188,11 +234,11 @@ class _FlipCardPageState extends State<FlipCardPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      '计时: ${timeCount.toStringAsFixed(1)}',
+                      '步数: $steps',
                       style: const TextStyle(fontSize: 25, color: Colors.blue),
                     ),
                     Text(
-                      '步数: $steps',
+                      '计时: ${timeCount.toStringAsFixed(1)} s',
                       style: const TextStyle(fontSize: 25, color: Colors.blue),
                     ),
                   ],
