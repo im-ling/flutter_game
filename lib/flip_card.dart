@@ -57,6 +57,9 @@ class _FlipCardPageState extends State<FlipCardPage> {
           Future.delayed(const Duration(milliseconds: 1500), () {
             setState(() {
               correctNumList.add(text);
+              if (correctNumList.length << 1 == isFrontList.length) {
+                isRunningGame = false;
+              }
             });
           });
         } else {
