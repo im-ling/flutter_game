@@ -37,6 +37,7 @@ class _JumpGamePageState extends State<JumpGamePage> {
   double score = 0;
   double step = stepInitial;
   bool isDispose = false;
+  double wallMinHeight = 20;
 
   @override
   void dispose() {
@@ -87,7 +88,13 @@ class _JumpGamePageState extends State<JumpGamePage> {
 
           wallX = wallX - 1 + stageSize;
           if (wallX < stageSize) {
-            wallHeight = Random().nextDouble() * 60 + 20;
+            wallMinHeight += 5;
+            if (wallMinHeight > 80) {
+              wallMinHeight = 80;
+            }
+            wallHeight = Random().nextDouble() * 60.0 + wallMinHeight;
+            // ignore: avoid_print
+            print("$wallMinHeight  $wallHeight");
           }
           wallX = wallX % stageSize;
 
@@ -164,6 +171,7 @@ class _JumpGamePageState extends State<JumpGamePage> {
     gameState = GameState.running;
     score = 0;
     step = stepInitial;
+    wallMinHeight = 20;
   }
 
   Widget buildGame() {
